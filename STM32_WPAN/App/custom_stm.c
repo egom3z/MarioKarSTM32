@@ -77,7 +77,7 @@ extern uint16_t Connection_Handle;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-uint16_t SizeLed_C = 8;
+uint16_t SizeLed_C = 2;
 uint16_t SizeSwitch_C = 2;
 
 /**
@@ -312,44 +312,11 @@ static SVCCTL_EvtAckStatus_t Custom_STM_Event_Handler(void *Event)
 
           else if (attribute_modified->Attr_Handle == (CustomContext.CustomLed_CHdle + CHARACTERISTIC_VALUE_ATTRIBUTE_OFFSET))
           {
-              return_value = SVCCTL_EvtAckFlowEnable;
+            return_value = SVCCTL_EvtAckFlowEnable;
+            /* USER CODE BEGIN CUSTOM_STM_Service_1_Char_1_ACI_GATT_ATTRIBUTE_MODIFIED_VSEVT_CODE */
 
-              // Check if we received 8 bytes (4 PWM values from dual IMU)
-              if (attribute_modified->Attr_Data_Length >= 8) {
-                  // Decode little-endian PWM values
-                  uint16_t icm_roll  = (uint16_t)attribute_modified->Attr_Data[0] |
-                                       ((uint16_t)attribute_modified->Attr_Data[1] << 8);
-                  uint16_t icm_pitch = (uint16_t)attribute_modified->Attr_Data[2] |
-                                       ((uint16_t)attribute_modified->Attr_Data[3] << 8);
-                  uint16_t mpu_roll  = (uint16_t)attribute_modified->Attr_Data[4] |
-                                       ((uint16_t)attribute_modified->Attr_Data[5] << 8);
-                  uint16_t mpu_pitch = (uint16_t)attribute_modified->Attr_Data[6] |
-                                       ((uint16_t)attribute_modified->Attr_Data[7] << 8);
-
-                  APP_DBG_MSG("BLE RX: ICM[R=%u P=%u] MPU[R=%u P=%u] µs\n",
-                               icm_roll, icm_pitch, mpu_roll, mpu_pitch);
-				  // Choose which sensor to use for steering control
-				  // Option 1: Use MPU-6050 (full range 1000-2000)
-				  setSteeringPWM(17, mpu_roll);
-//				  APP_DBG_MSG("Setting servo to MPU roll: %u µs\n", mpu_roll);
-
-				  // Option 2: Use ICM-20948 (half range 1200-1610)
-				  wp1625_throttle_fsm_step(icm_roll);
-
-
-
-				  // APP_DBG_MSG("Setting servo to ICM roll: %u µs\n", icm_roll);
-
-				  // Option 3: Log all values for data collection
-				  // log_to_sd_card(icm_roll, icm_pitch, mpu_roll, mpu_pitch);
-              }
-          }
-
-          else {
-			APP_DBG_MSG("BLE RX: Insufficient data (got %d bytes, need 8)\n",
-						 attribute_modified->Attr_Data_Length);
-		  }
-
+            /* USER CODE END CUSTOM_STM_Service_1_Char_1_ACI_GATT_ATTRIBUTE_MODIFIED_VSEVT_CODE */
+          } /* if (attribute_modified->Attr_Handle == (CustomContext.CustomLed_CHdle + CHARACTERISTIC_VALUE_ATTRIBUTE_OFFSET))*/
           /* USER CODE BEGIN EVT_BLUE_GATT_ATTRIBUTE_MODIFIED_END */
 
           /* USER CODE END EVT_BLUE_GATT_ATTRIBUTE_MODIFIED_END */
